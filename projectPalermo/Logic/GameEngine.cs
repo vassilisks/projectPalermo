@@ -1,36 +1,41 @@
-namespace projectPalermo.Models; 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using projectPalermo.Models; // Για να "βλέπει" τον Player και το RoleType
+
 namespace projectPalermo.Logic;
 
-public void PlayNightPhase(List<Player> players)
+public class GameEngine
 {
-    foreach (var player in players.Where(p => p.IsAlive))
+    public void PlayNightPhase(List<Player> players)
     {
-        // Μόνο οι ρόλοι με ειδικές ικανότητες δρουν τη νύχτα
-        if (player.Role == RoleType.Citizen) continue;
-
-        Console.Clear();
-        Console.WriteLine($"Παρακαλώ να μείνει στην οθόνη μόνο ο/η: {player.Name}");
-        Console.WriteLine("Πατήστε Enter όταν είστε έτοιμοι...");
-        Console.ReadLine();
-
-        switch (player.Role)
+        foreach (var player in players.Where(p => p.IsAlive))
         {
-            case RoleType.Mafia:
-            case RoleType.Godfather:
-                HandleMurderAction(player, players);
-                break;
-            case RoleType.Police:
-                HandleInvestigation(player, players);
-                break;
-            // Πρόσθεσε εδώ Doctor κλπ.
-        }
+            if (player.Role == RoleType.Citizen) continue;
 
-        Console.WriteLine("Η ενέργειά σας καταγράφηκε. Πατήστε Enter για να σβήσει η οθόνη.");
-        Console.ReadLine();
-        Console.Clear();
+            Console.Clear();
+            Console.WriteLine($"Παρακαλώ να μείνει στην οθόνη μόνο ο/η: {player.Name}");
+            Console.WriteLine("Πατήστε Enter όταν είστε έτοιμοι...");
+            Console.ReadLine();
+
+            switch (player.Role)
+            {
+                case RoleType.Mafia:
+                case RoleType.Godfather:
+                    // Το φτιάχνουμε παρακάτω
+                    Console.WriteLine("Είστε η μαφία. Ποιον θέλετε να " + "σκοτώσετε" + ";"); 
+                    Console.ReadLine();
+                    break;
+                case RoleType.Police:
+                    HandlePoliceAction(player, players);
+                    break;
+            }
+
+            Console.WriteLine("Η ενέργειά σας καταγράφηκε. Πατήστε Enter για να σβήσει η οθόνη.");
+            Console.ReadLine();
+            Console.Clear();
+        }
     }
-    
-    // Logic/GameEngine.cs
 
     private void HandlePoliceAction(Player police, List<Player> allPlayers)
     {
@@ -41,8 +46,6 @@ public void PlayNightPhase(List<Player> players)
 
         if (target != null)
         {
-            // ΕΔΩ ΕΙΝΑΙ Η ΔΙΑΧΕΙΡΙΣΗ ΤΗΣ ΚΡΥΦΗΣ ΠΛΗΡΟΦΟΡΙΑΣ:
-            // Αν ο target είναι Godfather, το AppearsAsInnocent είναι true
             if (target.AppearsAsInnocent) 
             {
                 Console.WriteLine($"Ο/Η {target.Name} είναι: ΑΘΩΟΣ");
@@ -52,13 +55,14 @@ public void PlayNightPhase(List<Player> players)
                 Console.WriteLine($"Ο/Η {target.Name} είναι: ΕΝΟΧΟΣ");
             }
         }
+        else
+        {
+            Console.WriteLine("Αυτός ο παίκτης δεν βρέθηκε.");
+        }
     }
-    
-    // Logic/GameEngine.cs
 
     public void ShowMafiaTeammates(Player currentMafia, List<Player> allPlayers)
     {
-        // Φιλτράρουμε όσους είναι ορατοί στη μαφία (π.χ. Godfather, Mafia)
         var teammates = allPlayers.Where(p => p.IsVisibleToMafia && p.Name != currentMafia.Name);
     
         Console.WriteLine("Οι συνεργάτες σου είναι:");
@@ -67,6 +71,4 @@ public void PlayNightPhase(List<Player> players)
             Console.WriteLine("- " + mate.Name);
         }
     }
-    
-    
 }

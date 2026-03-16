@@ -1,6 +1,4 @@
-namespace projectPalermo.Models; 
-namespace projectPalermo.Logic;
-
+namespace projectPalermo.Models;
 
 public class Player
 {
