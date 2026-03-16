@@ -1,3 +1,7 @@
+namespace projectPalermo.Models; 
+namespace projectPalermo.Logic;
+
+
 public class Player
 {
     public string Name { get; set; }
